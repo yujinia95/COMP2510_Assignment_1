@@ -7,13 +7,13 @@
 
 char* format_text(char words[MAX_WORD_NUMS][MAX_WORD_LENGTH], int word_count, int line_length);
 void cpy_word(const char from[], char to[], const int start_index, const int end_index);
-void print_array(char arr[MAX_WORD_NUMS][MAX_WORD_LENGTH], const int rows, const int cols);
+void print_array(char arr[MAX_WORD_NUMS][MAX_WORD_LENGTH], const int rows);
 void insert_space(char arr[], const int end, const int location, const int spaces);
 int str_includes(char* arr, int n, char ch);
 void separate_word(char from[], char to[], const int start, const int end);
 int main(int argc, char const* argv[])
 {
-    if (argc < 2)
+    if (argc < 3)
     {
         puts("error: have to use file name and line length as command line arguments");
         exit(1);
@@ -22,37 +22,37 @@ int main(int argc, char const* argv[])
     const int line_length = atoi(argv[1]);
     const char* file_name = argv[2];
 
+    if (!line_length)
+    {
+        puts("Bad line length");
+        exit(1);
+    }
+
     FILE* fp;
 
-    char curr_word[MAX_WORD_LENGTH];
     char words[MAX_WORD_NUMS][MAX_WORD_LENGTH];
 
     char* formatted_file;
 
-    fp = fopen(argv[2], "r");
+    fp = fopen(file_name, "r");
 
-    if (!line_length)
-    {
-        puts("Bad line length");
-        fclose(fp);
-        exit(1);
-    }
     if (fp == NULL)
     {
         puts("Bad file name");
         exit(1);
     }
-
     int i = 0;
     int hyphen_index;
-    while (fscanf(fp, "%s", words[i]) != EOF && i + strlen(words[i]) < MAX_TEXT_LENGTH)
+    while (fscanf(fp, "%s", words[i]) != EOF)
     {
+
         if (hyphen_index = str_includes(words[i], strlen(words[i]), '-'))
         {
             separate_word(words[i], words[i + 1], hyphen_index + 1, strlen(words[i]));
             i++;
         }
-        if (strlen(words[i]) > line_length && (hyphen_index && strlen(words[i - 1]) > line_length))
+
+        if (strlen(words[i]) > line_length || (hyphen_index && strlen(words[i - 1]) > line_length))
         {
             printf("Error. The word \"%s\" is longer than %d\n", words[i], line_length);
             fclose(fp);
@@ -60,6 +60,7 @@ int main(int argc, char const* argv[])
         }
         i++;
     }
+    print_array(words, i);
     formatted_file = format_text(words, i, line_length);
     printf("%s\n", formatted_file);
 
@@ -76,7 +77,7 @@ char* format_text(char words[MAX_WORD_NUMS][MAX_WORD_LENGTH], int word_count, in
     int curr_line = 1;
     int curr_line_length = 0;
     int curr_line_words = 0;
-    for (int i = 0; i < word_count; i++)
+    for (int i = 0; i < word_count && ((curr_line - 1) * 10 + curr_line_length) < MAX_TEXT_LENGTH; i++)
     {
         if (curr_line_length + strlen(words[i]) <= line_length)
         {
@@ -97,6 +98,7 @@ char* format_text(char words[MAX_WORD_NUMS][MAX_WORD_LENGTH], int word_count, in
                         (line_length - curr_line_length + 1) / (curr_line_words - 1));
                 }
             }
+            //TODO: Replace the space with \n
             curr_char += line_length - curr_line_length;
             formatted_text[curr_char] = '\n';
             curr_char++;
@@ -139,11 +141,11 @@ void separate_word(char from[], char to[], const int start, const int end)
 
 }
 
-void print_array(char arr[MAX_WORD_NUMS][MAX_WORD_LENGTH], const int rows, const int cols)
+void print_array(char arr[MAX_WORD_NUMS][MAX_WORD_LENGTH], const int rows)
 {
     for (int i = 0; i < rows; i++)
     {
-        printf("%s, ", arr[i]);
+        printf("%s|", arr[i]);
     }
     printf("\n");
 }

@@ -1,0 +1,16 @@
+words = I|am|a|student|at|BCIT|CST.|
+4
+words[i]
+					   
+start formatted_text = I am a0000
+				       student at
+					   BCIT  CST.
+					   
+
+int curr_char = 6;
+int curr_line = 1;    
+int curr_line_length = 6;
+int curr_line_words = 3;
+line_length = 10;
+
+end formatted_text = I am a studnet at BCIT CST.
