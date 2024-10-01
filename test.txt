@@ -1,16 +1,18 @@
 words = I|am|a|student|at|BCIT|CST.|
-4
+
 words[i]
-					   
-start formatted_text = I am a0000
-				       student at
-					   BCIT  CST.
+					   01234567890
+start formatted_text = I   am   a
+					   12345678901
+					   student atn 
+					   234567890123567
+					   BCIT  CST.00000000000000000000000000000000000000000000000000000
 					   
 
-int curr_char = 6;
-int curr_line = 1;    
-int curr_line_length = 6;
-int curr_line_words = 3;
+int curr_char = 22;
+int curr_line = 2;    
+int curr_line_length = 11;
+int curr_line_words = 1;
 line_length = 10;
 
 end formatted_text = I am a studnet at BCIT CST.

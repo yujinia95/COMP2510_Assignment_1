@@ -49,18 +49,24 @@ int main(int argc, char const* argv[])
         if (hyphen_index = str_includes(words[i], strlen(words[i]), '-'))
         {
             separate_word(words[i], words[i + 1], hyphen_index + 1, strlen(words[i]));
+
+            if (strlen(words[i]) > line_length)
+            {
+                printf("Error. The word processor can't display the output.\n");
+                fclose(fp);
+                exit(1);
+            }
             i++;
         }
 
-        if (strlen(words[i]) > line_length || (hyphen_index && strlen(words[i - 1]) > line_length))
+        if (strlen(words[i]) > line_length)
         {
-            printf("Error. The word \"%s\" is longer than %d\n", words[i], line_length);
+            printf("Error. The word processor can't display the output.\n");
             fclose(fp);
             exit(1);
         }
         i++;
     }
-    print_array(words, i);
     formatted_file = format_text(words, i, line_length);
     printf("%s\n", formatted_file);
 
@@ -88,7 +94,8 @@ char* format_text(char words[MAX_WORD_NUMS][MAX_WORD_LENGTH], int word_count, in
         }
         else
         {
-            for (int j = curr_line * line_length; j > (curr_line - 1) * line_length; j--)
+            //TODO: it might be causing problems cuz of like lines not starting from the calculaton
+            for (int j = (curr_line - 1) * line_length, total_space = line_length - curr_line_length + 1; j < curr_line * line_length; j++)
             {
                 //TODO: gotta make it so that it does not put spaces in all spaces if there are more words than spaces needed
                 //TODO: can also reimplment the space insert logic so that it inserts spaces in real-time
@@ -98,7 +105,6 @@ char* format_text(char words[MAX_WORD_NUMS][MAX_WORD_LENGTH], int word_count, in
                         (line_length - curr_line_length + 1) / (curr_line_words - 1));
                 }
             }
-            //TODO: Replace the space with \n
             curr_char += line_length - curr_line_length;
             formatted_text[curr_char] = '\n';
             curr_char++;
@@ -133,7 +139,7 @@ void cpy_word(const char from[], char to[], const int start_index, const int end
 
 void separate_word(char from[], char to[], const int start, const int end)
 {
-    for (int i = 0, j = start; i < end; i++, j++)
+    for (int i = 0, j = start; j < end; i++, j++)
     {
         to[i] = from[j];
         from[j] = '\0';
