@@ -3,11 +3,8 @@ I|am|a|BCIT-|student|in|CST.|
 
 words[i]
 					   0123456789012345
-start formatted_text = I  am  a BCIT-
-					   student
-					   at 
-					   234567890123567
-					   BCIT  CST.00000000000000000000000000000000000000000000000000000
+start formatted_text = I   am   a 
+					   student at BCIT CST.
 					   
 
 int curr_char = 22;
