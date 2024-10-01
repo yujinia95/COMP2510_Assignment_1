@@ -4,13 +4,15 @@
 #define MAX_WORD_LENGTH 100
 #define MAX_WORD_NUMS 40
 #define MAX_TEXT_LENGTH 200
+#define SPACE ' '
 
 char* format_text(char words[MAX_WORD_NUMS][MAX_WORD_LENGTH], int word_count, int line_length);
 void cpy_word(const char from[], char to[], const int start_index, const int end_index);
-void print_array(char arr[MAX_WORD_NUMS][MAX_WORD_LENGTH], const int rows);
+void print_array(char arr[], const int rows);
 void insert_space(char arr[], const int end, const int location, const int spaces);
 int str_includes(char* arr, int n, char ch);
 void separate_word(char from[], char to[], const int start, const int end);
+void center_word(char* arr, const int line_end, const int word_start, const int word_end);
 int main(int argc, char const* argv[])
 {
     if (argc < 3)
@@ -68,7 +70,8 @@ int main(int argc, char const* argv[])
         i++;
     }
     formatted_file = format_text(words, i, line_length);
-    printf("%s\n", formatted_file);
+    // print_array(formatted_file, MAX_TEXT_LENGTH);
+    printf("%s", formatted_file);
 
     fclose(fp);
     free(formatted_file);
@@ -83,8 +86,10 @@ char* format_text(char words[MAX_WORD_NUMS][MAX_WORD_LENGTH], int word_count, in
     int curr_line = 1;
     int curr_line_length = 0;
     int curr_line_words = 0;
+    int loops_done = 1;
     for (int i = 0; i < word_count && ((curr_line - 1) * 10 + curr_line_length) < MAX_TEXT_LENGTH; i++)
     {
+        // printf("WE AT WORD '%s'\n", words[i]);
         if (curr_line_length + strlen(words[i]) <= line_length)
         {
             cpy_word(words[i], formatted_text, curr_char, curr_char + strlen(words[i]));
@@ -94,18 +99,31 @@ char* format_text(char words[MAX_WORD_NUMS][MAX_WORD_LENGTH], int word_count, in
         }
         else
         {
-            //TODO: it might be causing problems cuz of like lines not starting from the calculaton
-            for (int j = (curr_line - 1) * line_length, total_space = line_length - curr_line_length + 1; j < curr_line * line_length; j++)
+            if (curr_line_words > 1)
             {
-                //TODO: gotta make it so that it does not put spaces in all spaces if there are more words than spaces needed
-                //TODO: can also reimplment the space insert logic so that it inserts spaces in real-time
-                if (formatted_text[j] == ' ')
+                formatted_text[curr_char - 1] = '\0';
+            }
+
+            loops_done = 1;
+            for (int j = (curr_line - 1) * (line_length + 1), total_space = line_length - curr_line_length + 1; total_space > 0; j++)
+            {
+                // printf("WE IN j, %d\n", j);
+                if (formatted_text[j] == SPACE)
                 {
-                    insert_space(formatted_text, curr_line * line_length, j,
-                        (line_length - curr_line_length + 1) / (curr_line_words - 1));
+                    printf("j is %d\ntotal space is %d\n", j, total_space);
+                    insert_space(formatted_text, (curr_line * line_length), j, 1);
+                    j += loops_done;
+                    total_space--;
+                }
+                if ((j + 1) == (line_length * curr_line))
+                {
+                    j = (curr_line - 1) * (line_length + 1);
+                    loops_done++;
                 }
             }
-            curr_char += line_length - curr_line_length;
+            if (curr_line_words != 1)
+                curr_char += line_length - curr_line_length;
+
             formatted_text[curr_char] = '\n';
             curr_char++;
             curr_line++;
@@ -115,15 +133,30 @@ char* format_text(char words[MAX_WORD_NUMS][MAX_WORD_LENGTH], int word_count, in
             curr_line_words = 1;
         }
     }
-    for (int j = curr_line * line_length; curr_line_words > 1 && j > (curr_line - 1) * line_length; j--)
+    if (curr_line_words > 1)
     {
-        if (formatted_text[j] == ' ')
+        formatted_text[curr_char - 1] = '\0';
+    }
+    for (int j = (curr_line - 1) * (line_length + 1), total_space = line_length - curr_line_length + 1; total_space > 0; j++)
+    {
+        if (formatted_text[j] == SPACE)
         {
-            insert_space(formatted_text, curr_line * line_length, j,
-                (line_length - curr_line_length + 1) / (curr_line_words - 1));
+            insert_space(formatted_text, (curr_line * line_length), j, 1);
+            j += loops_done;
+            total_space--;
+        }
+        if ((j + 1) == (line_length * curr_line))
+        {
+            j = (curr_line - 1) * (line_length + 1);
+            loops_done++;
         }
     }
-    //TODO: Last line must end with \n 
+    if (curr_line_words > 1)
+    {
+        curr_char += line_length - curr_line_length;
+    }
+    formatted_text[curr_char] = '\n';
+    formatted_text[curr_char + 1] = '\0';
 
     return formatted_text;
 }
@@ -134,7 +167,7 @@ void cpy_word(const char from[], char to[], const int start_index, const int end
     {
         to[i] = from[j];
     }
-    to[end_index] = ' ';
+    to[end_index] = SPACE;
 }
 
 void separate_word(char from[], char to[], const int start, const int end)
@@ -144,14 +177,13 @@ void separate_word(char from[], char to[], const int start, const int end)
         to[i] = from[j];
         from[j] = '\0';
     }
-
 }
 
-void print_array(char arr[MAX_WORD_NUMS][MAX_WORD_LENGTH], const int rows)
+void print_array(char arr[], const int rows)
 {
     for (int i = 0; i < rows; i++)
     {
-        printf("%s|", arr[i]);
+        printf("%d|", arr[i]);
     }
     printf("\n");
 }
@@ -170,7 +202,7 @@ void insert_space(char arr[], const int end, const int location, const int space
 
     for (int i = location; i < location + spaces; i++)
     {
-        arr[i] = ' ';
+        arr[i] = SPACE;
     }
 }
 
@@ -184,4 +216,35 @@ int str_includes(char* arr, int n, char ch)
         }
     }
     return 0;
+}
+
+void center_word(char* arr, const int line_end, const int word_start, const int word_end)
+{
+    // puts("" + arr);
+    const int spaces = (word_start - line_end) - (word_start - word_end + 1);
+    const int start_spaces = (spaces % 2 == 1) ? spaces / 2 + 1 : spaces / 2;
+    const int end_spaces = spaces / 2;
+
+    insert_space(arr, line_end, word_start, start_spaces);
+    insert_space(arr, line_end, word_end + start_spaces, end_spaces);
+}
+
+void round_robin(char* arr, int curr_line, int line_length, int curr_line_length)
+{
+    int loops_done = 1;
+
+    for (int j = (curr_line - 1) * (line_length + 1), total_space = line_length - curr_line_length + 1; total_space > 0; j++)
+    {
+        if (arr[j] == SPACE)
+        {
+            insert_space(arr, (curr_line * line_length), j, 1);
+            j += loops_done;
+            total_space--;
+        }
+        if ((j + 1) == (line_length * curr_line))
+        {
+            j = (curr_line - 1) * (line_length + 1);
+            loops_done++;
+        }
+    }
 }

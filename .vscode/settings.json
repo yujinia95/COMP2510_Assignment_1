@@ -1,0 +1,21 @@
+{
+  "files.associations": {
+    "*.ejs": "html",
+    "*.txt": "hoi4",
+    "array": "c",
+    "deque": "c",
+    "string": "c",
+    "unordered_map": "c",
+    "vector": "c",
+    "string_view": "c",
+    "initializer_list": "c",
+    "span": "c",
+    "chrono": "c",
+    "format": "c",
+    "__bit_reference": "c",
+    "__hash_table": "c",
+    "__split_buffer": "c",
+    "ios": "c",
+    "iterator": "c"
+  }
+}
