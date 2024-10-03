@@ -85,8 +85,9 @@ char* format_file(FILE* fp, const int line_length)
 
       if (hyphen_index = str_includes(curr_word, '-'))
       {
-         // TODO: handle hyphen
+         word_start[current_line_words] = hyphen_index;
          printf("found hyphen at %d of curr word", hyphen_index);
+         current_line_words++;
       }
 
       if (current_line_length + strlen(curr_word) + current_line_words <= line_length)
