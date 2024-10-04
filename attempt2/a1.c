@@ -11,13 +11,15 @@ char* format_file(FILE* fp, const int line_length);
 void cpy_word(const char from[], char to[], const int start_index, const int end);
 int str_includes(char* arr, char ch);
 void print_arr_int(int* arr, int n);
+void print_arr_char(char* arr, int n);
 void justify_line(char* text, int* word_locations, int line_words, int line_end, int spaces, int line_length);
 void insert_space(char* arr, const int end, const int location, const int spaces);
 void center_word(char* text, int location, int line_end, int spaces, int line_length);
+void separate_word(char from[], char to[], const int start, const int end);
 int main(int argc, char const* argv[])
 {
    // Check to make sure there are aleast 3 arguments
-   if (argc < 3)
+   if(argc < 3)
    {
       printf("error: have to use file name and line length as command line arguments: %s", EXECUTE_FORMAT);
       exit(1);
@@ -27,7 +29,7 @@ int main(int argc, char const* argv[])
    const int line_length = atoi(argv[1]);
 
    // Exit the program if atoi does not return the number
-   if (!line_length)
+   if(!line_length)
    {
       printf("Error. Bad line length. %s\n", EXECUTE_FORMAT);
       exit(1);
@@ -41,7 +43,7 @@ int main(int argc, char const* argv[])
    char* formatted_file;
 
    // Try to open the file using and exit the program if returns the NULL pointer
-   if ((fp = fopen(file_name, "r")) == NULL)
+   if((fp = fopen(file_name, "r")) == NULL)
    {
       printf("Bad file name: %s", EXECUTE_FORMAT);
       exit(1);
@@ -65,7 +67,7 @@ char* format_file(FILE* fp, const int line_length)
 {
    char* formatted_file = (char*)malloc(MAX_TEXT_LENGTH * sizeof(char));
    char curr_word[MAX_WORD_LENGTH];
-   char hyphen_word[MAX_WORD_LENGTH];
+   char hyphen_word[MAX_WORD_LENGTH] = "";
    int word_start[MAX_WORD_NUMS] = { 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 };
 
 
@@ -74,23 +76,35 @@ char* format_file(FILE* fp, const int line_length)
    int current_line_words = 0;
    int curr_line = 1;
    int hyphen_index;
-   while (fscanf(fp, "%s", curr_word) != EOF)
+   while(fscanf(fp, "%s", curr_word) != EOF)
    {
-      if (strlen(curr_word) > line_length)
+      hyphen_index = str_includes(curr_word, '-');
+
+      if(hyphen_index && current_line_words + current_line_length + hyphen_index + 1 <= line_length)
+      {
+         word_start[current_line_words] = current_char;
+
+         printf("found hyphen at %d of curr word\n", hyphen_index);
+         print_arr_int(word_start, current_line_length);
+         print_arr_char(formatted_file, current_char);
+
+         separate_word(curr_word, hyphen_word, hyphen_index, strlen(curr_word));
+
+         cpy_word(hyphen_word, formatted_file, current_char, MAX_TEXT_LENGTH);
+
+         current_line_words++;
+         current_char += strlen(hyphen_word);
+         current_line_length += strlen(hyphen_word);
+      }
+
+      if(strlen(curr_word) > line_length)
       {
          printf("Error. The word processor can't display the output.\n");
          fclose(fp);
          exit(1);
       }
 
-      if (hyphen_index = str_includes(curr_word, '-'))
-      {
-         word_start[current_line_words] = hyphen_index;
-         printf("found hyphen at %d of curr word", hyphen_index);
-         current_line_words++;
-      }
-
-      if (current_line_length + strlen(curr_word) + current_line_words <= line_length)
+      if(current_line_length + strlen(curr_word) + current_line_words <= line_length)
       {
          word_start[current_line_words] = current_char;
 
@@ -127,6 +141,8 @@ char* format_file(FILE* fp, const int line_length)
    formatted_file[current_char] = '\n';
    current_char++;
 
+   print_arr_char(formatted_file, current_char);
+
    return formatted_file;
 }
 
@@ -141,7 +157,7 @@ char* format_file(FILE* fp, const int line_length)
  */
 void cpy_word(const char from[], char to[], const int start_index, const int end)
 {
-   for (int i = start_index, j = 0; i < end && j < strlen(from); i++, j++)
+   for(int i = start_index, j = 0; i < end && j < strlen(from); i++, j++)
    {
       to[i] = from[j];
    }
@@ -156,9 +172,9 @@ void cpy_word(const char from[], char to[], const int start_index, const int end
  */
 int str_includes(char* arr, char ch)
 {
-   for (int i = 0; i < strlen(arr); i++)
+   for(int i = 0; i < strlen(arr); i++)
    {
-      if (arr[i] == ch)
+      if(arr[i] == ch)
       {
          return i;
       }
@@ -169,26 +185,26 @@ int str_includes(char* arr, char ch)
 void justify_line(char* text, int* word_locations, int line_words, int line_end, int spaces, int line_length)
 {
    // printf("Before:%s\n", text);
-   if (line_words == 1)
+   if(line_words == 1)
    {
       center_word(text, word_locations[0], line_end, spaces, line_length);
       return;
    }
 
    int i;
-   while (spaces > 0)
+   while(spaces > 0)
    {
-      for (i = 1; i < line_words; i++)
+      for(i = 1; i < line_words; i++)
       {
          insert_space(text, line_end, word_locations[i], 1);
          spaces--;
 
-         if (!(spaces > 0))
+         if(!(spaces > 0))
          {
             break;
          }
 
-         for (int j = i + 1; j < line_words; j++)
+         for(int j = i + 1; j < line_words; j++)
          {
             word_locations[j]++;
          }
@@ -207,16 +223,38 @@ void print_arr_int(int* arr, int n)
 {
    printf("{ ");
 
-   for (int i = 0; i < n; i++)
+   for(int i = 0; i < n; i++)
    {
       printf("%d", arr[i]);
-      if (i < n - 1)
+      if(i < n - 1)
       {
          printf(", ");
       }
 
    }
 
+   printf(" }\n");
+}
+
+/**
+ * Prints out an array of chars.
+ *
+ * @param arr The array to be printed out
+ * @param n   The number of elements to print out
+ */
+void print_arr_char(char* arr, int n)
+{
+   printf("{ ");
+
+   for(int i = 0; i < n; i++)
+   {
+      printf("%d", arr[i]);
+      if(i < n - 1)
+      {
+         printf(", ");
+      }
+
+   }
 
    printf(" }\n");
 }
@@ -226,18 +264,18 @@ void print_arr_int(int* arr, int n)
  */
 void insert_space(char arr[], const int end, const int location, const int spaces)
 {
-   if (spaces < 1)
+   if(spaces < 1)
    {
-      puts("Warning. Adding negative spaces is impossible");
+      printf("Warning. Adding negative spaces is impossible location: %d, spaces %d\n", location, spaces);
       return;
    }
 
-   for (int i = end; i >= location; i--)
+   for(int i = end; i >= location; i--)
    {
       arr[i + spaces] = arr[i];
    }
 
-   for (int i = location; i < location + spaces; i++)
+   for(int i = location; i < location + spaces; i++)
    {
       arr[i] = SPACE;
    }
@@ -251,4 +289,20 @@ void center_word(char* text, int location, int line_end, int spaces, int line_le
 
    insert_space(text, line_end, location + word_length, end_spaces);
    insert_space(text, line_end, location, start_spaces);
+}
+
+void separate_word(char from[], char to[], const int start, const int end)
+{
+   for(int i = 0; i <= start; i++)
+   {
+      to[i] = from[i];
+   }
+
+   for(int i = 0; i < end; i++)
+   {
+      from[i] = from[i + start + 1];
+      from[i + start + 1] = '\0';
+   }
+
+   printf("\n");
 }
