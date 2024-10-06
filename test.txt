@@ -1,16 +1,24 @@
 words = I|am|a|student|at|BCIT|CST.|
-I|am|a|BCIT-|student|in|CST.|
+I am a BCIT-student in CST.
 
-words[i]
-					   0123456789012345
-start formatted_text = I   am   a 
-					   student at BCIT CST.
+start curr_word = BCIT-student
+start hyphen_word = ""
+end curr_word = student
+end hyphen_word = BCIT-
+
+					   	  0123456789012345
+start formatted_text = I  am  a BCIT-n
+							  567890123456789
+							  student     inn
+							  01234567890123456
+							       CST.     n     
 					   
 
-int curr_char = 22;
-int curr_line = 2;    
-int curr_line_length = 11;
+int curr_char = 34;
+int curr_line = 3;    
+int curr_line_length = 4;
 int curr_line_words = 1;
-line_length = 19;
+word_start[] = {30,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
+line_length = 14;
 
 end formatted_text = I am a studnet at BCIT CST.

@@ -38,8 +38,6 @@ int main(int argc, char const* argv[])
    const char* file_name = argv[2];
    FILE* fp;
 
-   char words[MAX_WORD_NUMS][MAX_WORD_LENGTH];
-
    char* formatted_file;
 
    // Try to open the file using and exit the program if returns the NULL pointer
@@ -210,6 +208,11 @@ void justify_line(char* text, int* word_locations, int line_words, int line_end,
          }
       }
    }
+   for(int i = 0; i < line_words; i++)
+   {
+      word_locations[i] = 0;
+   }
+
    // printf("After: %s\n", text);
 }
 
