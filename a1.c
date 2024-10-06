@@ -1,3 +1,11 @@
+/**
+* Author: Pouyan Norouzi Iranzadeh
+* Author: Nariyal Rayas
+* Author: Yujin Jeong
+* Date: 5th Oct 2024
+* Purpose: Take input in command line arguments, and justifying the text files with desired line length by distributing
+           equal spaces between words. Output will be presented in the termanal.
+*/
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -10,12 +18,14 @@
 char* format_file(FILE* fp, const int line_length);
 void cpy_word(const char from[], char to[], const int start_index, const int end);
 int str_includes(char* arr, char ch);
-void print_arr_int(int* arr, int n);
-void print_arr_char(char* arr, int n);
 void justify_line(char* text, int* word_locations, int line_words, int line_end, int spaces, int line_length);
 void insert_space(char* arr, const int end, const int location, const int spaces);
 void center_word(char* text, int location, int line_end, int spaces, int line_length);
 void separate_word(char from[], char to[], const int start, const int end);
+
+/**
+* Main (Drives the program)
+*/
 int main(int argc, char const* argv[])
 {
     // Check to make sure there are aleast 3 arguments
@@ -82,10 +92,6 @@ char* format_file(FILE* fp, const int line_length)
         {
             word_start[current_line_words] = current_char;
 
-            printf("found hyphen at %d of curr word\n", hyphen_index);
-            print_arr_int(word_start, current_line_length);
-            print_arr_char(formatted_file, current_char);
-
             separate_word(curr_word, hyphen_word, hyphen_index, strlen(curr_word));
 
             cpy_word(hyphen_word, formatted_file, current_char, MAX_TEXT_LENGTH);
@@ -111,8 +117,6 @@ char* format_file(FILE* fp, const int line_length)
             current_char += strlen(curr_word);
             current_line_length += strlen(curr_word);
             current_line_words++;
-
-            // printf("curr char: %2d, curr line length: %d\n", current_char, current_line_length);
         }
         else
         {
@@ -138,8 +142,6 @@ char* format_file(FILE* fp, const int line_length)
 
     formatted_file[current_char] = '\n';
     current_char++;
-
-    print_arr_char(formatted_file, current_char);
 
     return formatted_file;
 }
@@ -179,10 +181,19 @@ int str_includes(char* arr, char ch)
     }
     return 0;
 }
-//TODO: Document this function
+
+/**
+* Justifying the line by putting spaces between words
+*
+* @param text from text file
+* @param word_locations location of words in index
+* @param line_words the number of the words in current line
+* @param line_end index of the last character at the end of current line(including spaces)
+* @param spaces the number of spaces
+* @param line_length the max length of the line
+*/
 void justify_line(char* text, int* word_locations, int line_words, int line_end, int spaces, int line_length)
 {
-    // printf("Before:%s\n", text);
     if(line_words == 1)
     {
         center_word(text, word_locations[0], line_end, spaces, line_length);
@@ -212,58 +223,15 @@ void justify_line(char* text, int* word_locations, int line_words, int line_end,
     {
         word_locations[i] = 0;
     }
-
-    // printf("After: %s\n", text);
 }
 
 /**
- * Prints out an array of ints.
- *
- * @param arr The array to be printed out
- * @param n   The number of elements to print out
- */
-void print_arr_int(int* arr, int n)
-{
-    printf("{ ");
-
-    for(int i = 0; i < n; i++)
-    {
-        printf("%d", arr[i]);
-        if(i < n - 1)
-        {
-            printf(", ");
-        }
-
-    }
-
-    printf(" }\n");
-}
-
-/**
- * Prints out an array of chars.
- *
- * @param arr The array to be printed out
- * @param n   The number of elements to print out
- */
-void print_arr_char(char* arr, int n)
-{
-    printf("{ ");
-
-    for(int i = 0; i < n; i++)
-    {
-        printf("%d", arr[i]);
-        if(i < n - 1)
-        {
-            printf(", ");
-        }
-
-    }
-
-    printf(" }\n");
-}
-
-/**
- * Inserts spaces in an array of chars.
+* Inserts spaces in an array of chars.
+*
+* @param arr[] words array where we want to place spaces in.
+* @param end index of the word where we want to stop split the words
+* @param location of the word we want to center
+* @param spaces the number of spaces
  */
 void insert_space(char arr[], const int end, const int location, const int spaces)
 {
@@ -284,6 +252,16 @@ void insert_space(char arr[], const int end, const int location, const int space
     }
 }
 
+/**
+* If there is one word in the line, then center the word by adding spaces.
+* If there is odd number of spaces, adding one extra space on the left side of the word.
+*
+* @param text from text file
+* @param location of the word we want to center
+* @param line_end index of the last character at the end of current line(including spaces)
+* @param spaces the number of spaces
+* @param line_length the max length of the line
+*/
 void center_word(char* text, int location, int line_end, int spaces, int line_length)
 {
     const int end_spaces = spaces / 2;
@@ -294,6 +272,14 @@ void center_word(char* text, int location, int line_end, int spaces, int line_le
     insert_space(text, line_end, location, start_spaces);
 }
 
+/**
+* Separate a word from text file.
+*
+* @param from[] array that holds a word
+* @param to[] array that holds two separated words
+* @param start index of the word where we want to split the words
+* @param end index of the word where we want to stop split the words
+*/
 void separate_word(char from[], char to[], const int start, const int end)
 {
     for(int i = 0; i <= start; i++)
